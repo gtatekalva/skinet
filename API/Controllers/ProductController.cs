@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
+using API.RequestHelpers;
 using Core.Entities;
 using Core.Interfaces;
 using Core.Specifications;
@@ -13,19 +14,24 @@ using Microsoft.Extensions.Logging;
 
 namespace API.Controllers
 {
-    [ApiController]
-    [Route("api/[controller]")]
-    public class ProductsController(IGenericRepository<Product> repo) : ControllerBase
+    
+    public class ProductsController(IGenericRepository<Product> repo) : BaseAPIController
     {
 
         [HttpGet]
-        public async Task<ActionResult<IReadOnlyList<Product>>> GetProducts(string? brand, string? type, string? sort)
+        public async Task<ActionResult<IReadOnlyList<Product>>> GetProducts([FromQuery]ProductSpecParams specParam)
         {
-            var spec = new ProductSpecification(brand, type, sort);
+            var spec = new ProductSpecification(specParam);
 
-            var products = await repo.ListAsync(spec);
+            // var products = await repo.ListAsync(spec);
 
-            return Ok(products);
+            // var count = await repo.CountAsync(spec);
+
+            // var pagination = new Pagination<Product>(specParam.PageIndex, specParam.Pagesize, count, products);
+
+            var pagination = await CreatePagedResults(repo, spec, specParam.PageIndex, specParam.Pagesize);
+
+            return Ok(pagination);
         }
 
         [HttpGet("{id:int}")]
@@ -97,7 +103,7 @@ namespace API.Controllers
         [HttpGet("types")]
         public async Task<ActionResult<IReadOnlyList<string>>> GetTypes()
         {
-           
+
             var spec = new TypeListSpecification();
 
             return Ok(await repo.ListAsync(spec));
