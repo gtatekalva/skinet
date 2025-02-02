@@ -4,32 +4,21 @@ import { HeaderComponent } from "./layout/header/header.component";
 import { HttpClient } from '@angular/common/http';
 import { Product } from './shared/models/product';
 import { Pagination } from './shared/models/pagination';
+import { ShopService } from './core/services/shop.service';
+import { ShopComponent } from "./features/shop/shop.component";
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet, HeaderComponent],
+  imports: [RouterOutlet, HeaderComponent, ShopComponent],
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss'
 })
-export class AppComponent implements OnInit{
- 
-  baseURL = "https://localhost:5001/api/"
-  private http = inject(HttpClient);
+export class AppComponent implements OnInit {
   title = 'Skinet';
-  products: Product[] = [];
-
-  //this.products = response.data ,
 
   ngOnInit(): void {
-    this.http.get<any>(this.baseURL + 'products').subscribe({
-      next: response =>   {
-        console.log('Full Response:', response.value.data);
-        this.products = response.value.data; // Extract the product array
-      },
-      error: err => console.error('Error fetching products:', err),
-      complete: () => console.log('Products fetched successfully')
-    });
+    
   }
-  
+
 }
