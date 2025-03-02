@@ -31,7 +31,16 @@ builder.Services.AddSingleton<IConnectionMultiplexer>(config => {
 });
 builder.Services.AddSingleton<ICartService, CartService>();
 
-builder.Services.AddCors();
+//builder.Services.AddCors();
+
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAngularApp", builder =>
+        builder.WithOrigins("https://localhost:4200") // Allow frontend origin
+               .AllowAnyMethod()
+               .AllowAnyHeader()
+               .AllowCredentials()); // If you're using cookies or authentication
+});
 
 
 var app = builder.Build();
@@ -51,6 +60,8 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 
 app.UseAuthorization();
+
+
 
 app.MapControllers();
 
